@@ -2,18 +2,18 @@
 
 
 #ma fonction qui contient l'aide pour l'utilisateur
-affiche_help() 
+dispaly_help() 
 {
-    echo "Le premier parametre doit etre le chemin d'où se trouve le fichier"
-    echo "Le deuxieme parametre doit etre le pas ENTIER d'intervalle de longeur d'onde (c'est plus elegant comme ça :) )"
-    echo "Les valeurs à rentrer c'est le debut et fin d'interval "
+    echo "Fist parameter should indicate where's the file example :'\home\Desktop\file.txt'"
+    echo "Second parameter should be the step between  wavelength inervals"
+    echo "The values to enter are the boundaries of the interval you want to plot"
     echo "CAPEESH?"
 }
 
 
 
-#Cette section regarde si l'utilisateur a utilisé une option
-#Pour afficher que l'option ou l'aide sans afficher le reste !
+#This section looks if the command contains options
+#To display help and not anything else 
 has_options=false
 
 for arg in "$@"; do
@@ -24,17 +24,17 @@ for arg in "$@"; do
 done
 
 
-#La seule option c'est l'aide -help si tout autre option est
-#utilisée le programme renvoie une erreur
+#The only option here is the help, if any other option is used
+#It dispalys error message
 if $has_options; then
 
     while getopts ":h" opt; do #t: to add  an argument 
         case $opt in 
-          h ) # Si -h est passé, affiche l'aide
-                affiche_help
+          h ) # If -h is used it shows the help function
+               dispaly_help
                 ;;
-          \? ) # Si une option non valide est passée, 
-               echo "Option non valide: -$OPTARG" #il faut mettre :ht pour avoir ça (les deux points permettent d'initaliser OPTARG a l'option fausse)
+          \? ) # If any other option is used it will be invalid 
+               echo "Option non valide: -$OPTARG" #should use ":h" to work (les points let OPTARG be initialized to wrong option )
                exit 1
                ;;
         esac
@@ -45,67 +45,67 @@ if $has_options; then
 
 else
 
-        cheminfichier=$1
-        pas=$2
-        separateur=$3
+        filelink=$1
+        step=$2
+        separator=$3
     
-    
+    echo "$separator"
     # Vérification des valeur passées au script
 
     #Verifie si le chemin vers le fichier est bon et existe
     #Sinon affiche un message d'erreur et quitte l'aventure
-    if [ -f  $cheminfichier ]; then
-        echo "OK, le fichier existe."
+    if [ -f  $filelink ]; then
+        echo "OK, file exists."
     else
-        echo "Le fichier n'existe pas."
+        echo "File doesn't exist."
         exit
     fi
 
 
-    if (( $(echo "$pas > 0" | bc -l) )); then
-        if [[ $pas =~ ^[0-9]+$ ]]; then
-            echo "OK, le pas est bon."
+    if (( $(echo "$step > 0" | bc -l) )); then
+        if [[ $step =~ ^[0-9]+$ ]]; then
+            echo "Ok, choosen step is clear"
         else
-            echo "Le pas doit etre postif, entier, et plus grand que 0"
+            echo "Step should be integer greater than 0"
             exit
         
         fi
         
     else  
-            echo "Le pas doit etre postif, entier, et plus grand que 0"
+            echo "Step should be integer greater than 0"
             exit
         
    fi
 
-   echo "Utilisez -h sans les parametres pour afficher le message d'aide si vous n'avez pas compris" 
+   echo "Use the -h option without any parameters if you need help " 
 
    
 
-   read -p "Valeur de la premiere bonre (pas en kilo hein)      "  val1 
+   read -p " The positive non zero Value of the first boundary (not in kilos :])      "  val1 
 
-   #voir si positive
+   #See if it's positive
     if (( $(echo "$val1 > 0" | bc -l) )); then
         echo "OK."
     else
-        echo "La valeur n'est pas positive ou elle est égale à zéro."
+        echo "The value is negative or equals zero"
         exit
    fi
 
 
-   read -p "La deuxieme s'il vous plait :)        "   val2
+   read -p "Second one please ! :)        "   val2
 
 
-   if (( $(echo "$val2 > 0" | bc -l) )); then #comparer un reel
+   if (( $(echo "$val2 > 0" | bc -l) )); then 
         echo "OK."
     else
-        echo "La valeur n'est pas positive ou elle est égale à zéro."
+        echo "The value is negative or equals zero"
         exit
    fi
 
 
 
 
-   partie_entiere1=$(echo "$val1" | awk -F'.' '{print $1}') #pour prendre la partie entiere
+   partie_entiere1=$(echo "$val1" | awk -F'.' '{print $1}') #to transfom the value into integer
    partie_entiere2=$(echo "$val2" | awk -F'.' '{print $1}')
 
 
@@ -113,30 +113,21 @@ else
 
 
 
-   if [[ $((partie_entiere2-partie_entiere1)) = $pas ]]; then 
+   if [[ $((partie_entiere2-partie_entiere1)) = $step ]]; then 
 
         
-
-         v=$(python3 intensite.py $cheminfichier $pas "$separateur")
+         v=$(python3 Intensity.py "$filelink" $step "$separator")
+         
 
         echo TADAAAA
         
-        python3 recherche_plot.py "$v" "$val1" "$val2"  # il faut le passer comme un sting complet 
+        python3 Search_plot.py "$v" "$val1" "$val2"  # "$v" to pass it as a whole string
         
     else 
-        echo "Respectez le pas s'il vous plait, choisissez deux bornes separées par le pas donné"
+        echo "Please respect the step and choose values such that the step would be the diffrence of the two"
     fi
 fi
 
 
 
-
-
-
-
-#v=$(python3 i.py $1 $2)
-
-
-
-# Utiliser la valeur dans votre script Bash
 

@@ -10,21 +10,22 @@ wavelength={}
 
 s=sys.argv[1]
 s1=s.split(">")[0].split("\n")
-s1=s1[:-1] #pour eviter l'espace à la fin sinon il y aura une ligne qu'on pourra pas split
+s1=s1[:-1] #because an empty space appears in the end, we get red ot it to be able to split
 s2=s.split(">")[1].split("\n")
-s2=s2[1:] #meme commentraire mais au debut
+s2=s2[1:] #there's same issue but in the begining of the list
 
 
 for ligne_wave, ligne_int in zip(s1, s2):
           
-          tmp=ligne_wave.split("\t")[1] #je prends la deuxieme partie de la ligne qu'est les intensites
-          sous_chaines = tmp.split() #je decompose les valeurs de longeurs d'onde car c'est une suite de nombre (en forme de chaine pour l'instant) mais pas dans une liste
-          liste_nombres = [float(nombre) for nombre in sous_chaines] # je prends chaque chiffre dans la suite precedente et je le mets dans ma liste comme float
-          if (liste_nombres[0]==0): #c'est juste pour ne pas avoir le zero qui fait partie du fichier de depart car le dessin est moche
+          tmp=ligne_wave.split("\t")[1] #we take the second part of the line which is the wavelength data
+          sous_chaines = tmp.split() #we split the values which are spaced with an empty space then this gives us a list of strings
+
+          liste_nombres = [float(nombre) for nombre in sous_chaines] # we take the list of data as strings here and transform each one to float
+          if (liste_nombres[0]==0): # I delete the first value which is zero because it makes th graph look ugly 
             liste_nombres.remove(0)
-          wavelength.update([(ligne_wave.split("\t")[0],liste_nombres)])  #je remplis mon tableau
+          wavelength.update([(ligne_wave.split("\t")[0],liste_nombres)])  #HERE WE HAVE OUR DICTIONARY
            
-          tmp=ligne_int.split("\t")[1] #exactement la meme chose pour les intensites
+          tmp=ligne_int.split("\t")[1] #exact same thing with intensities
           sous_chaines = tmp.split()
           liste_nombres = [float(nombre) for nombre in sous_chaines]
           if (liste_nombres[0]==0):
@@ -34,14 +35,14 @@ for ligne_wave, ligne_int in zip(s1, s2):
 
 
 
-fig, ax = plt.subplots() #je cree ma figure
+fig, ax = plt.subplots() #create plot figure
 
 
-val1=sys.argv[2] #je recupere les valeurs de debut et fin d'interval
+val1=sys.argv[2] #Boundary values
 val2=sys.argv[3]
 
 for clef in wavelength:
-        if (clef==str(val1)+"--"+str(val2)): #si les deux valeurs matchent exactement un interval qui existe deja on affiche la figure correspondante
+        if (clef==str(val1)+"--"+str(val2)): #if the given interval mathes one existing interval we plot it and break
           x= wavelength[clef]
           y= intensty[clef]
           
@@ -54,8 +55,8 @@ for clef in wavelength:
           plt.show()
           print(clef.split("--"))
           break
-       #ce pendant si ce n'est pas le cas alors on prend la valeur de la premiere borne on cherche dans quel inerval elle fait partie
-       #puis on prend la deuxieme on fait la meme chose, puis on prend les deux intervale et on les affiche
+       #However, if it's not the case, we take first value and see in which interval in belongs, and we save that interval
+       #we do the same thing with the second value, and take this interval with the previous one and plot
         elif(int(float(clef.split("--")[0]))<=int(float(val1)) and int(float(clef.split("--")[1]))>int(float(val1))): #si la premiere borne est contenue dans un intevale on le prend
               x= wavelength[clef]
               y= intensty[clef]

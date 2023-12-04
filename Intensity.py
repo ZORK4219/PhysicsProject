@@ -8,16 +8,19 @@ import sys,re
 def moy(x):
      return sum(x[:])/len(x)
 
-intensty={} #dictionnaire vide pour stockers mes valeurs
+
+intensity={} #empty to dictionaries to stock data
 wavelength={}
-fichier=sys.argv[1]
+
+filelink=sys.argv[1]
 
 
-separeteur=sys.argv[3]
+separator=sys.argv[3]
 
-#je prends le premier argument de la commande qu'est le nom du fichier
-t=[]#je cree une liste vide pour contenir tout les information 
-fd = open( fichier , "r")
+
+t=[]#list to contains data before process
+
+fd = open( filelink , "r")
 for ligne in fd :
      if not re.search( "[A-z]", ligne ) and not re.search( "[+]", ligne ) :
           if "\"" in ligne: #csv
@@ -27,34 +30,38 @@ for ligne in fd :
               
           else : #normal
               
-               tmp=ligne.strip().split(separeteur)
+               tmp=ligne.strip().split(separator)
                
                
 
           t.append(tmp)
-          
-a=int(float(t[0][0]))
 
-b=int(float(sys.argv[2]))
+          
+a=int(float(t[0][0])) #first wavelength value 
+
+b=int(float(sys.argv[2])) #the step
 
 intens_tmp=[float(t[0][1])]
 
 wavelength_tmp=[float(t[0][1])]
 
 for i in range (1,len(t)):
-    #si on est a 10 on remplit le dictionnaire sinon on remplit la liste des intesite d'une fenetre
+    #we stock data in lists until i gets to 10 we stock all that in dictionnary
     if a+b==int(float(t[i][0])):
          # intens_tmp.append(float(t[i][1])) # pour ajouter la valeur qui correspond au i la sinon il sera pas inclu
-          intensty.update([(str(int(a))+"--"+str(int(float(t[i][0]))),intens_tmp)])
+          intensity.update([(str(int(a))+"--"+str(int(float(t[i][0]))),intens_tmp)])
           wavelength.update([(str(int(a))+"--"+str(int(float(t[i][0]))),wavelength_tmp)])
 
           a=int(float(t[i][0]))
           intens_tmp=[]
-          wavelength_tmp=[] # pour avoir une nouvelle liste vide et la remplir 
+          wavelength_tmp=[] # we empty the list to do it again
+
     if i==len(t)-1:
           intens_tmp.append(float(t[i][1]))
-          wavelength_tmp.append(float(t[i][0]))#pour ajouter la derniere valeur parce que si i=dernier element on passe plus par le else et du coup on perd la derniere valeur
-          intensty.update([(str(int(a))+"--"+str(int(float(t[i][0]))),intens_tmp)])
+          wavelength_tmp.append(float(t[i][0]))
+          #to add the last values because whe it's the last iterration
+          #we skip the else and data is not stored
+          intensity.update([(str(int(a))+"--"+str(int(float(t[i][0]))),intens_tmp)])
           wavelength.update([(str(int(a))+"--"+str(int(float(t[i][0]))),wavelength_tmp)])
          
     else:
@@ -62,14 +69,16 @@ for i in range (1,len(t)):
          wavelength_tmp.append(float(t[i][0]))
 
 
+#we create a string to contain the data
+#but not in list format, in kind of series of numbers instead
 s=""
 
 for clef in wavelength:
      s+=clef+"\t"+' '.join(map(str, wavelength[clef]))+"\n"
 
 s+=">\n"
-for clef in intensty:
-     s+=clef+"\t"+' '.join(map(str, intensty[clef]))+"\n"
+for clef in intensity:
+     s+=clef+"\t"+' '.join(map(str, intensity[clef]))+"\n"
 
 
 print(s)
