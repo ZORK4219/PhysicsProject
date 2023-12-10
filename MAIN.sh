@@ -12,6 +12,18 @@ dispaly_help()
 
 
 
+is_positive_integer() 
+{   re='^[0-9]+$'
+    if [[ $1 =~ $re ]] && [ $1 -gt 0 ]; then
+        echo "The number is a positive integer greater than zero."
+    else
+        echo "The input is not a positive integer greater than zero."
+        exit
+    fi
+}
+
+
+
 #This section looks if the command contains options
 #To display help and not anything else 
 has_options=false
@@ -44,47 +56,77 @@ if $has_options; then
 
 
 else
-
+    echo -e "Use the -h option without any parameters if you need help\n"
         filelink=$1
         step=$2
-        separator=$3
+        
     
-    echo "$separator"
-    # Vérification des valeur passées au script
+    # PARAMETER VERIFICATION
 
-    #Verifie si le chemin vers le fichier est bon et existe
-    #Sinon affiche un message d'erreur et quitte l'aventure
+    #if the file exists else everthing's done 
     if [ -f  $filelink ]; then
-        echo "OK, file exists."
+
+        if [ -s $linkfile ]; then
+            echo "File exists and it's not empty."
+        else 
+            echo "File exists but it's empty."
+        fi
+
     else
         echo "File doesn't exist."
         exit
     fi
 
-
-    if (( $(echo "$step > 0" | bc -l) )); then
-        if [[ $step =~ ^[0-9]+$ ]]; then
-            echo "Ok, choosen step is clear"
-        else
-            echo "Step should be integer greater than 0"
-            exit
+        is_positive_integer $step
         
-        fi
-        
-    else  
-            echo "Step should be integer greater than 0"
-            exit
-        
-   fi
-
-   echo "Use the -h option without any parameters if you need help " 
-
    
 
-   read -p " The positive non zero Value of the first boundary (not in kilos :])      "  val1 
+    read -p "Does you file have more than two columns  "    answer
+    case $answer in
+    "yes" | "YES" | "Yes" ) 
+         
+        read -p "First column (x axes) " column1
+        is_positive_integer $column1
+        read -p "Second column  (y axes)"   column2
+        is_positive_integer $column2
+
+           
+        
+        
+        # Add your code here for this condition
+        ;;
+    "no" | "NO" | "No" ) 
+         column1="1"
+         column2="2"
+        ;;
+    *)
+        echo "It's a yes no question dummy"
+        exit
+        ;;
+    esac
+   
+
+
+    v=$(python3 Intensity.py "$filelink" $step "$column1" "$column2")
+         
+          if [[ $v = "error1" ]];then
+            echo  "Your separator might be imbigiuous"
+            exit
+
+          elif [[ $v = "error2" ]];then
+            echo  "Choose one seperator, you're making my code ill"
+            exit
+          fi
+          
+   
+
+   read -p  "OK now give me the positive non zero Value of the first boundary (not in kilos :])      "  val1 
 
    #See if it's positive
     if (( $(echo "$val1 > 0" | bc -l) )); then
+    #Using bc command which is like a calculator having some similarities 
+    #with C programming language, using -l we can define the standard math library
+    #with which we can use some basic math stuff
         echo "OK."
     else
         echo "The value is negative or equals zero"
@@ -105,18 +147,17 @@ else
 
 
 
-   partie_entiere1=$(echo "$val1" | awk -F'.' '{print $1}') #to transfom the value into integer
-   partie_entiere2=$(echo "$val2" | awk -F'.' '{print $1}')
+   integer_part1=$(echo "$val1" | awk -F'.' '{print $1}') #to transfom the value into integer
+   
+   integer_part2=$(echo "$val2" | awk -F'.' '{print $1}')
 
 
 
 
 
+   
 
-   if [[ $((partie_entiere2-partie_entiere1)) = $step ]]; then 
-
-        
-         v=$(python3 Intensity.py "$filelink" $step "$separator")
+   if [[ $((integer_part2-integer_part1)) = $step ]]; then 
          
 
         echo TADAAAA

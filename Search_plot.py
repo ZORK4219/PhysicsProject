@@ -3,6 +3,14 @@
 
 import sys
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Button
+
+def moy(x):
+     return sum(x[:])/len(x)
+
+
+# Fonction à appeler lorsque le bouton est pressé
+
 
 
 intensty={}
@@ -51,10 +59,8 @@ for clef in wavelength:
           ax.set_xlabel("Wavelength (nm)",style='italic') 
           ax.set_ylabel("Intensity (kicks)",style='italic') 
           ax.legend()
-
-          plt.show()
-          print(clef.split("--"))
           break
+
        #However, if it's not the case, we take first value and see in which interval in belongs, and we save that interval
        #we do the same thing with the second value, and take this interval with the previous one and plot
         elif(int(float(clef.split("--")[0]))<=int(float(val1)) and int(float(clef.split("--")[1]))>int(float(val1))): #si la premiere borne est contenue dans un intevale on le prend
@@ -70,11 +76,25 @@ for clef in wavelength:
               ax.set_xlabel("Wavelength (nm)",style='italic') 
               ax.set_ylabel("Intensity (kicks)",style='italic') 
               ax.legend()
-
-              plt.show()
               break
+
+
+def on_button_clicked(event):
+    plt.text(2, 0.5,"La Moyenne :   "+str(moy(y))+"\nLe max :    "+str(max(y))+"\nLe min :"+str(min(y)), ha='center', va='center', fontsize=12)
+    plt.draw()
+
+plt.subplots_adjust(bottom=0.2)  # Ajuster l'espace en bas pour le bouton
+
+# Position du bouton
+button_ax = plt.axes([0.7, 0.05, 0.1, 0.075])  # [left, bottom, width, height]
+
+# Création du bouton
+button = Button(button_ax, 'Info Intensite')
+
+# Lier la fonction à l'événement "click"
+button.on_clicked(on_button_clicked)
             
-              
+plt.show()            
             
 #marche ok
 
