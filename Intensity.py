@@ -62,7 +62,12 @@ for line in fd :
                          tmp=line.strip().split(separator)
                          while '' in tmp: #if there's the same separator repeted it creates spaces in the list so we just delete them
                               tmp.remove('')
-               data.append(tmp[column1-1:column2:column2-column1]) # storing the wanted data 
+
+               if column1>len(tmp) or column2>len(tmp): #incase given colums do not exist
+                    print("error3")
+                    sys.exit()
+               else:          
+                    data.append(tmp[column1-1:column2:column2-column1]) # storing the wanted data 
 
           
 a=int(float(data[0][0])) #first wavelength value 

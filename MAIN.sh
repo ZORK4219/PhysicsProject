@@ -116,6 +116,9 @@ else
           elif [[ $v = "error2" ]];then
             echo  "Choose one seperator, you're making my code ill"
             exit
+          elif [[ $v = "error3" ]];then
+            echo  -e "\nOPS! I think you should check your file because the given columns do not exist"
+            exit
           fi
           
    
