@@ -4,9 +4,11 @@
 #ma fonction qui contient l'aide pour l'utilisateur
 dispaly_help() 
 {
-    echo "Fist parameter should indicate where's the file example :'\home\Desktop\file.txt'"
-    echo "Second parameter should be the step between  wavelength inervals"
-    echo "The values to enter are the boundaries of the interval you want to plot"
+    echo "* Fist parameter should indicate where's the file example :'\home\Desktop\file.txt'"
+    echo "* Second parameter should be the step between  wavelength inervals "
+    echo "   and if you want some good graphs and exact results use a small step (1 is recommanded) "
+    echo "* The values to enter are the boundaries of the interval you want to plot"
+    echo "* Verify please that your separator doesn't contain any letters, or that it's a comma if you have real values"
     echo "CAPEESH?"
 }
 
@@ -64,22 +66,26 @@ else
     # PARAMETER VERIFICATION
 
     #if the file exists else everthing's done 
-    if [ -f  $filelink ]; then
+    if [ ! -z  $filelink ]; then
 
-        if [ -s $linkfile ]; then
-            echo "File exists and it's not empty."
-        else 
-            echo "File exists but it's empty."
+        if [ -f  $filelink ]; then
+
+            if [ -s $filelink ]; then
+                echo "File exists and it's not empty."
+            else 
+                echo "File exists but it's empty."
+            fi
+        else
+            echo "File doesn't exist."
+            exit
         fi
 
+            is_positive_integer $step
     else
-        echo "File doesn't exist."
+        echo "You didn't give me the link to the file"
         exit
-    fi
-
-        is_positive_integer $step
-        
-   
+    fi   
+  
 
     read -p "Does you file have more than two columns  "    answer
     case $answer in
@@ -123,10 +129,10 @@ else
           
    
 
-   read -p  "OK now give me the positive non zero Value of the first boundary (not in kilos :])      "  val1 
+    read -p  "OK now give me the positive non zero Value of the first boundary (not in kilos :])      "  boundary1 
 
    #See if it's positive
-    if (( $(echo "$val1 > 0" | bc -l) )); then
+    if (( $(echo "$boundary1 > 0" | bc -l) )); then
     #Using bc command which is like a calculator having some similarities 
     #with C programming language, using -l we can define the standard math library
     #with which we can use some basic math stuff
@@ -137,10 +143,10 @@ else
    fi
 
 
-   read -p "Second one please ! :)        "   val2
+   read -p "Second one please ! :)        "   boundary2
 
 
-   if (( $(echo "$val2 > 0" | bc -l) )); then 
+   if (( $(echo "$boundary2 > 0" | bc -l) )); then 
         echo "OK."
     else
         echo "The value is negative or equals zero"
@@ -150,26 +156,19 @@ else
 
 
 
-   integer_part1=$(echo "$val1" | awk -F'.' '{print $1}') #to transfom the value into integer
-   
-   integer_part2=$(echo "$val2" | awk -F'.' '{print $1}')
-
-
-
-
-
    
 
-   if [[ $((integer_part2-integer_part1)) = $step ]]; then 
-         
-
+        if (( $(echo "$boundary1 > $boundary2"| bc -l)));then #in case the user enters the first value bigger than the other second one
+            temporary=$boundary1
+            boundary1=$boundary2
+            boundary2=$temporary
+        fi
+        
         echo TADAAAA
         
-        python3 Search_plot.py "$v" "$val1" "$val2"  # "$v" to pass it as a whole string
+        python3 Search_plot.py "$v" "$boundary1" "$boundary2"  # "$v" to pass it as a whole string
         
-    else 
-        echo "Please respect the step and choose values such that the step would be the diffrence of the two"
-    fi
+    
 fi
 
 

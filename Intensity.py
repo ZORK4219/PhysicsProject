@@ -4,7 +4,7 @@
 
 import sys,re
 
-#/home/giulio4219/Desktop/Spectre_photoluminescence.txt
+
 
 
 
@@ -34,9 +34,9 @@ for line in fd :
                   #take lines which contain only numbers  
 
                if "\"" in line: #here we use this trick if were dealing with values stocked inside quotes
-                    tmp=line.strip().split("\"" )
-                    del tmp[0:-1:2]; del tmp[-1]
-                    tmp = list(map(lambda x: x.replace(',', '.'), tmp)) #we replace coma with a point if the numbers are floats and have , instead of .
+                    temporary_list=line.strip().split("\"" )
+                    del temporary_list[0:-1:2]; del temporary_list[-1]
+                    temporary_list = list(map(lambda x: x.replace(',', '.'), temporary_list)) #we replace coma with a point if the numbers are floats and have , instead of .
               #so if the file is organised like this we don'data need to look for the separator
               #ifnot we do the following thing
                else:     
@@ -59,70 +59,67 @@ for line in fd :
  
                               
                     else :
-                         tmp=line.strip().split(separator)
-                         while '' in tmp: #if there's the same separator repeted it creates spaces in the list so we just delete them
-                              tmp.remove('')
+                         temporary_list=line.strip().split(separator)
+                         while '' in temporary_list: #if there's the same separator repeted it creates spaces in the list so we just delete them
+                              temporary_list.remove('')
 
-               if column1>len(tmp) or column2>len(tmp): #incase given colums do not exist
+               if column1>len(temporary_list) or column2>len(temporary_list): #incase given colums do not exist
                     print("error3")
                     sys.exit()
                else:          
-                    data.append(tmp[column1-1:column2:column2-column1]) # storing the wanted data 
+                    data.append(temporary_list[column1-1:column2:column2-column1]) # storing the wanted data 
 
-          
+
+
+
+
+
+
 a=int(float(data[0][0])) #first wavelength value 
 
 b=int(float(sys.argv[2])) #the step
 
-intens_tmp=[float(data[0][1])]
+intens_temporary_list=[float(data[0][1])]
 
-wavelength_tmp=[float(data[0][1])]
-
+wavelength_temporary_list=[float(data[0][1])]
+string1=""
+string2=""
+#we create strings to contain the data
+#but not in list format, in kind of series of numbers instead
 for i in range (1,len(data)):
-    #we stock data in lists until i gets to 10 we stock all that in dictionnary
+    #we stock data in lists until i gets to 10 we stock all that in strings, one for wavelength and one for intensity
     if a+b==int(float(data[i][0])):
-         # intens_tmp.append(float(data[i][1])) # pour ajouter la valeur qui correspond au i la sinon il sera pas inclu
-          intensity.update([(str(int(a))+"--"+str(int(float(data[i][0]))),intens_tmp)])
-          wavelength.update([(str(int(a))+"--"+str(int(float(data[i][0]))),wavelength_tmp)])
+          string1+=str(int(a))+"--"+str(int(float(data[i][0])))+"\t"+' '.join(map(str, wavelength_temporary_list))+"\n"
+          string2+=str(int(a))+"--"+str(int(float(data[i][0])))+"\t"+' '.join(map(str, intens_temporary_list))+"\n"
 
           a=int(float(data[i][0]))
-          intens_tmp=[]
-          wavelength_tmp=[] # we empty the list to do it again
+          intens_temporary_list=[]
+          wavelength_temporary_list=[] # we empty the list to do it again
 
     if i==len(data)-1:
-          intens_tmp.append(float(data[i][1]))
-          wavelength_tmp.append(float(data[i][0]))
+          intens_temporary_list.append(float(data[i][1]))
+          wavelength_temporary_list.append(float(data[i][0]))
           #to add the last values because whe it's the last iterration
           #we skip the else and data is not stored
-          intensity.update([(str(int(a))+"--"+str(int(float(data[i][0]))),intens_tmp)])
-          wavelength.update([(str(int(a))+"--"+str(int(float(data[i][0]))),wavelength_tmp)])
+          string1+=str(int(a))+"--"+str(int(float(data[i][0])))+"\t"+' '.join(map(str, wavelength_temporary_list))+"\n"
+          string2+=str(int(a))+"--"+str(int(float(data[i][0])))+"\t"+' '.join(map(str, intens_temporary_list))+"\n"
          
     else:
-         intens_tmp.append(float(data[i][1]))
-         wavelength_tmp.append(float(data[i][0]))
+         intens_temporary_list.append(float(data[i][1]))
+         wavelength_temporary_list.append(float(data[i][0]))
 
 
-#we create a string to contain the data
-#but not in list format, in kind of series of numbers instead
-s=""
-
-for clef in wavelength:
-     s+=clef+"\t"+' '.join(map(str, wavelength[clef]))+"\n"
-     #map generates series of numbers as sting from the list
-     #then join takes each of these element and adds an empty space 
-
-s+=">\n"
-for clef in intensity:
-     s+=clef+"\t"+' '.join(map(str, intensity[clef]))+"\n"
 
 
-print(s)
+
+#we combain our strings
+finalstring=string1+">\n"+string2
+
+
+print(finalstring)
      
 
 
-
-#for clef in ext:
- #    print(len(ext[clef]),"  ",moy(ext[clef]),"  ",min(ext[clef])," ",max(ext[clef]),"\n")
 
 
 

@@ -17,19 +17,19 @@ The details about each program will be breifly explained in the next section, an
 I will give you here a breif idea, in the simplest way possible to see how each one works :
 
 ###   <span style="color: #008080;">\- *Bash script* 
- &emsp;&emsp; It start by looking if the user, put -help command, if he did, it dispalys help, or else it starts examining all the parameters to see if they are acceptable or else it exists the programm. If everything is good (file exists, step is positive, more than two columns or not...), then it asks for boundary values to plot the interval (verifies also if there're go to use). It calls **Intensity.py** and store the result in a variable then pass it to **Search.py** and then the programm takes care of the rest and plots the data.
+ &emsp;&emsp; It start by looking if the user, put -help command, if he did, it dispalys help, or else it starts examining all the parameters to see if they are acceptable or else it exists the programm. If everything is good (file exists, step is positive, more than two columns or not...), then it asks for boundary values to plot the interval (verifies also if there're good to use). It calls **Intensity.py** and store the result in a variable then passes it to **Search.py**, where the programm takes care of the rest to plots the data.
 
 ###   <span style="color: #008080;"> \- *Python scripts* 
  <span style="color: #ffd33d; font-weight: bold;">&emsp;&#8226; Intensity.py</span>
  
 
-&emsp;This program searches for the file indicated in the parameters then it starts looking in it using **re** module, we take the data by spliting the line into separate values( the separator here is searched automatically, message error can indicate if the file is strangly written), and then we build to dictionnaries, one for wavelength the other for intensities, where the values are split by a step of integer passed as parameter. Here I used some kind of wierd way to pass the dictionnary to the other programm, because I wanted to make the Bash programm useful, but there are many easy ways to do it. So here creat a sting and put all the data in it and then return it to the Bash script using the print function. Now as explinained above it passes it to the **Search_plot.py**.
+&emsp;This program searches for the file indicated in the parameters then it starts looking in it using **re** module, we take the data by spliting the line into separate values( the separator here is searched automatically, message error can indicate if the file is strangly written), instead of  building dictionnaries in this stage, (one for wavelength the other for intensities), I create string and put my data inside because it's easier to deal with later. So the values are devided in windows by a step of integer passed as parameter. I think there are many better ways to do what I did but it was fun trying to make the bash programm as useful as possible. Now the string is passed to the Bash script using the print function, which in his turn gives it to the **Search_plot.py**.
 <br/> <br/> 
 <span style="color: #dc143c;">*PS: if the file has more than two columns the user should put which columns he'd like to choose !*</span>
 
  <span style="color: #ffd33d; font-weight: bold;">&emsp;&#8226; Search_plot.py</span>
  
-&emsp;Since the data is passed as a string here, it rebuilds the dictionary again. And using the boundaries values, it searchs if the given interval corresponds to one of the existing intervals, or else it searches in which existing intervals belong the valeues and then it takes both of them and plots.
+&emsp;Since the data is passed as a string here, the dictionnaries must be built here. And using the boundary values, it searchs if the given interval corresponds to one of the existing intervals, or else it searches in which existing intervals belong the valeues and then it takes both of them and plots. To make good scientific stuff the user should use a small step ( I recommand 1), thus the programm can collect the exat data.
 
 ##  <span style="color: #2ecc71;"> How to tweak this project for your own uses !
 
